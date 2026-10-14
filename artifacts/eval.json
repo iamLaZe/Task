@@ -1,0 +1,101 @@
+{
+ "A_train<=Mar_test_Apr-Jun": {
+  "n_test": 2136,
+  "frauds_test": 45,
+  "always_legit_accuracy": 0.9789,
+  "logreg": {
+   "auc": 0.261,
+   "pr_auc": 0.063,
+   "acc_at_half": 0.932,
+   "review": {
+    "k": 120,
+    "frauds_caught": 3,
+    "precision": 0.025,
+    "fraud_inr_stopped": 17060.0,
+    "goodwill_inr": 44460,
+    "net_inr": -27400.0,
+    "inr_stopped_per_claim_checked": 142.2
+   }
+  },
+  "hgb": {
+   "auc": 0.423,
+   "pr_auc": 0.091,
+   "acc_at_half": 0.971,
+   "review": {
+    "k": 120,
+    "frauds_caught": 8,
+    "precision": 0.067,
+    "fraud_inr_stopped": 26151.0,
+    "goodwill_inr": 42560,
+    "net_inr": -16409.0,
+    "inr_stopped_per_claim_checked": 217.9
+   }
+  }
+ },
+ "B_train<=Apr_test_May-Jun": {
+  "n_test": 1431,
+  "frauds_test": 36,
+  "always_legit_accuracy": 0.9748,
+  "logreg": {
+   "auc": 0.124,
+   "pr_auc": 0.014,
+   "acc_at_half": 0.919,
+   "review": {
+    "k": 80,
+    "frauds_caught": 0,
+    "precision": 0.0,
+    "fraud_inr_stopped": 0.0,
+    "goodwill_inr": 30400,
+    "net_inr": -30400.0,
+    "inr_stopped_per_claim_checked": 0.0
+   }
+  },
+  "hgb": {
+   "auc": 0.354,
+   "pr_auc": 0.044,
+   "acc_at_half": 0.964,
+   "review": {
+    "k": 80,
+    "frauds_caught": 4,
+    "precision": 0.05,
+    "fraud_inr_stopped": 7955.0,
+    "goodwill_inr": 28880,
+    "net_inr": -20925.0,
+    "inr_stopped_per_claim_checked": 99.4
+   }
+  }
+ },
+ "C_train<=May_test_Jun": {
+  "n_test": 720,
+  "frauds_test": 22,
+  "always_legit_accuracy": 0.9694,
+  "logreg": {
+   "auc": 0.936,
+   "pr_auc": 0.545,
+   "acc_at_half": 0.863,
+   "review": {
+    "k": 40,
+    "frauds_caught": 17,
+    "precision": 0.425,
+    "fraud_inr_stopped": 23877.0,
+    "goodwill_inr": 8740,
+    "net_inr": 15137.0,
+    "inr_stopped_per_claim_checked": 596.9
+   }
+  },
+  "hgb": {
+   "auc": 0.878,
+   "pr_auc": 0.297,
+   "acc_at_half": 0.931,
+   "review": {
+    "k": 40,
+    "frauds_caught": 9,
+    "precision": 0.225,
+    "fraud_inr_stopped": 14282.0,
+    "goodwill_inr": 11780,
+    "net_inr": 2502.0,
+    "inr_stopped_per_claim_checked": 357.1
+   }
+  }
+ }
+}

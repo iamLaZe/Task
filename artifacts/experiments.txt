@@ -1,0 +1,28 @@
+Holdout: fit May 2026 (711 rows, 14 frauds), score June 2026 (720 rows, 22 frauds)
+
+logreg, all 13 features                                 AUC 0.936  PR-AUC 0.682  caught 16/40  Rs/claim 556
+logreg, FINAL 6 features (kept)                         AUC 0.955  PR-AUC 0.715  caught 18/40  Rs/claim 618
+logreg, tiny 4 features                                 AUC 0.945  PR-AUC 0.694  caught 18/40  Rs/claim 618
+logreg, FINAL minus prior-claims & outlet history       AUC 0.923  PR-AUC 0.280  caught 11/40  Rs/claim 455
+gradient boosting, all features (dropped)               AUC 0.926  PR-AUC 0.523  caught 15/40  Rs/claim 532
+rule: new outlet & small & uninspected (dropped)        AUC 0.922  PR-AUC 0.280  caught 11/40  Rs/claim 455
+rule: small & uninspected only (dropped)                AUC 0.653  PR-AUC 0.049  caught 2/40  Rs/claim 100
+"new partner" alone (the hunch, dropped)                AUC 0.895  PR-AUC 0.170  caught 4/40  Rs/claim 199
+
+-- free-text check: does claim_description / inspector_note add anything? --
+distinct claim_description values: 12  | inspector_note blank share: 0.81
+                           mean  count
+claim_description                     
+remote not working        0.008    133
+not charging              0.015    131
+display not working       0.039    129
+loud noise while running  0.024    124
+filter indicator stuck    0.017    119
+unit not heating          0.025    119
+power button not working  0.017    117
+motor not running         0.051    117
+FINAL + description text (dropped)                      AUC 0.963  PR-AUC 0.677  caught 18/40  Rs/claim 618
+
+serial reused by another claim: fraud rate 0.0131 vs not reused 0.0116 (no signal, dropped)
+
+random split (dropped, flatters the model): AUC 0.833 - vs 0.12-0.42 when tested on later months, see artifacts/eval.json

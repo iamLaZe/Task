@@ -1,0 +1,27 @@
+{
+ "holdout": "fit May-2026, score Jun-2026",
+ "n": 720,
+ "frauds": 22,
+ "always_legit_accuracy": 0.9694,
+ "auc": 0.955,
+ "pr_auc": 0.715,
+ "top40": {
+  "frauds_caught": 18,
+  "precision": 0.45,
+  "fraud_inr_stopped": 24716.0,
+  "goodwill_inr_lost": 8360,
+  "inr_stopped_per_claim_checked": 617.9,
+  "net_inr": 16356.0
+ },
+ "acc_at_0_5": 0.906,
+ "acc_at_top40_flag": 0.964,
+ "bootstrap_top40_caught_90ci": [
+  12,
+  24
+ ],
+ "bootstrap_inr_per_claim_90ci": [
+  402,
+  856
+ ],
+ "earlier_check_model_trained_only_before_May": "AUC 0.12-0.42 on Apr-Jun and May-Jun: pre-regime patterns do not transfer (see artifacts/eval.json)"
+}

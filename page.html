@@ -1,0 +1,75 @@
+<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Kestrel claim check</title>
+<style>
+*{box-sizing:border-box}body{font:15px system-ui,sans-serif;margin:0;background:#f6f7f9;color:#1b1f24}
+header{background:#1f3a5f;color:#fff;padding:14px 24px}header h1{margin:0;font-size:19px}header small{opacity:.8}
+nav{display:flex;gap:4px;padding:12px 24px 0}nav button{border:0;padding:10px 18px;border-radius:8px 8px 0 0;background:#e3e7ed;cursor:pointer;font-size:14px}nav button.on{background:#fff;font-weight:600}
+main{background:#fff;margin:0 24px 24px;padding:20px;border-radius:0 8px 8px 8px;box-shadow:0 1px 3px #0002;min-height:60vh}
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}select,input{padding:8px;border:1px solid #b8c0cc;border-radius:6px;font-size:14px}
+button.act{background:#1f3a5f;color:#fff;border:0;padding:9px 16px;border-radius:6px;cursor:pointer;font-size:14px}
+table{border-collapse:collapse;width:100%}th{text-align:left;font-size:12px;color:#5b6573;padding:8px;border-bottom:2px solid #e3e7ed}
+td{padding:9px 8px;border-bottom:1px solid #eef0f3}tr.r{cursor:pointer}tr.r:hover{background:#f0f4fa}
+.pill{padding:3px 9px;border-radius:12px;font-size:12px;font-weight:600;white-space:nowrap}
+.HIGH{background:#fde2e2;color:#9b1c1c}.MEDIUM{background:#fff3cd;color:#8a6100}.LOW{background:#e3f6e5;color:#1d6b2c}
+.why{background:#f6f8fc}.why ul{margin:4px 0 4px 18px;padding:0}.hint{color:#5b6573;font-size:13px;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;max-width:760px}label{font-size:12px;color:#5b6573;display:block;margin-bottom:3px}
+.grid input,.grid select{width:100%}#res{margin-top:18px;padding:16px;border-radius:8px;max-width:760px}.score{font-size:26px;font-weight:700}
+.err{color:#9b1c1c}
+</style>
+<header><h1>Kestrel warranty claim check</h1><small>Highest fraud risk first. Review the top claims before paying them.</small></header>
+<nav><button id=t1 class=on onclick="tab(1)">Review queue</button><button id=t2 onclick="tab(2)">Check one claim</button><button id=t3 onclick="tab(3)">Upload a CSV</button></nav>
+<main>
+<section id=s1>
+ <p class=hint>The desk can investigate about 40 claims a month. These are the 40 riskiest recent claims for the month you pick. Click a row to see why.</p>
+ <div class=bar><label style="margin:0">Month</label><select id=month onchange="loadQ()"></select><span id=qinfo class=hint style="margin:0"></span></div>
+ <div id=q>Loading...</div>
+</section>
+<section id=s2 hidden>
+ <p class=hint>Pick a recent claim and the details fill in automatically, or choose values from the lists.</p>
+ <div class=bar><div><label>Recent claim</label><select id=pick onchange="fillClaim()" style="min-width:280px"><option value="">Select a claim...</option></select></div></div>
+ <div class=grid>
+  <div><label>Partner</label><select id=partner_id></select></div>
+  <div><label>Product (SKU)</label><select id=sku></select></div>
+  <div><label>Claim amount (Rs)</label><input id=claim_amount_inr type=number value=1500></div>
+  <div><label>Days since purchase</label><input id=days_since_purchase type=number value=200></div>
+  <div><label>Customer's earlier claims</label><input id=customer_prior_claims type=number value=0 min=0></div>
+  <div><label>Photo attached</label><select id=photo_attached><option value=Y>Yes<option value=N>No</select></div>
+  <div><label>Inspected by partner</label><select id=partner_inspected><option value=N>No<option value=Y>Yes</select></div>
+  <div><label>Submitted at</label><input id=submitted_at value=""></div>
+ </div>
+ <p><button class=act onclick="check()">Check claim</button></p><div id=res hidden></div>
+</section>
+<section id=s3 hidden>
+ <p class=hint>Upload a CSV of claims (same columns as the claims export). You get the 40 riskiest back, ranked, with reasons.</p>
+ <div class=bar><input type=file id=file accept=".csv"><button class=act onclick="up()">Rank these claims</button></div><div id=uq></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const inr=x=>'Rs '+Math.round(x).toLocaleString('en-IN');
+function tab(n){[1,2,3].forEach(i=>{$('s'+i).hidden=i!=n;$('t'+i).className=i==n?'on':''})}
+async function api(u,o){try{const r=await fetch(u,o);const j=await r.json();return r.ok?j:{error:j.error||'Request failed'}}catch(e){return{error:'Service unavailable, please try again.'}}}
+function table(rows){if(!rows.length)return '<p>No claims.</p>';
+ return '<table><tr><th>#</th><th>Claim</th><th>Partner</th><th>Product</th><th>Amount</th><th>Inspected</th><th>Risk</th><th></th></tr>'+
+ rows.map((r,i)=>`<tr class=r onclick="tg(this)"><td>${i+1}</td><td>${r.claim_id}</td><td>${r.partner_id}<br><small>${r.city}</small></td><td>${r.family||r.sku}</td><td>${inr(r.amount)}</td><td>${r.inspected=='Y'?'Yes':'No'}</td><td>${(r.score*100).toFixed(0)}%</td><td><span class="pill ${r.recommendation.split(' ')[0]}">${r.recommendation.split(' ')[0]}</span></td></tr>
+ <tr class=why hidden><td></td><td colspan=7><ul>${r.reasons.map(x=>'<li>'+x+'</li>').join('')}</ul></td></tr>`).join('')+'</table>'}
+function tg(tr){const n=tr.nextElementSibling;n.hidden=!n.hidden}
+async function loadQ(){const m=$('month').value;const j=await api('/api/queue?limit=40&month='+m);
+ if(j.error){$('q').innerHTML='<p class=err>'+j.error+'</p>';return}
+ if(!$('month').options.length){$('month').innerHTML=j.months.map(x=>`<option>${x}</option>`).join('');return loadQ()}
+ $('qinfo').textContent=j.total+' claims in this month. Showing the 40 highest risk.';$('q').innerHTML=table(j.rows)}
+async function init(){const o=await api('/api/options');
+ if(!o.error){$('partner_id').innerHTML=o.partners.map(x=>`<option>${x}</option>`).join('');$('sku').innerHTML=o.skus.map(x=>`<option>${x}</option>`).join('');
+  const q=await api('/api/queue?limit=30');if(!q.error)$('pick').innerHTML+=q.rows.map(r=>`<option value="${r.claim_id}">${r.claim_id} - ${r.partner_id}, ${inr(r.amount)}, ${r.inspected=='Y'?'inspected':'not inspected'}</option>`).join('')}
+ $('submitted_at').value=new Date().toISOString().slice(0,16).replace('T',' ');loadQ()}
+async function fillClaim(){const id=$('pick').value;if(!id)return;const j=await api('/api/claim/'+id);if(j.error)return;const r=j.raw;
+ ['partner_id','sku','claim_amount_inr','days_since_purchase','customer_prior_claims','photo_attached','partner_inspected','submitted_at'].forEach(k=>$(k).value=r[k]);check()}
+async function check(){const o={};['partner_id','sku','claim_amount_inr','days_since_purchase','customer_prior_claims','photo_attached','partner_inspected','submitted_at'].forEach(k=>o[k]=$(k).value);
+ ['claim_amount_inr','days_since_purchase','customer_prior_claims'].forEach(k=>o[k]=Number(o[k]));
+ const j=await api('/score',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(o)});const b=$('res');b.hidden=false;
+ if(j.error){b.className='err';b.textContent='Could not check: '+j.error;return}
+ const c=j.recommendation.split(' ')[0];b.className=c;b.innerHTML=`<div class=score>${(j.fraud_score*100).toFixed(0)}% risk</div><b>${j.recommendation}</b><ul>${j.reasons.map(x=>'<li>'+x+'</li>').join('')}</ul>`}
+async function up(){const f=$('file').files[0];if(!f){$('uq').innerHTML='<p class=err>Choose a CSV file first.</p>';return}
+ const fd=new FormData();fd.append('file',f);const j=await api('/api/upload',{method:'POST',body:fd});
+ $('uq').innerHTML=j.error?'<p class=err>'+j.error+'</p>':'<p class=hint>'+j.total+' claims scored. Top 40:</p>'+table(j.rows)}
+init();
+</script>

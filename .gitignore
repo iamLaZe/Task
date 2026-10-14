@@ -1,0 +1,18 @@
+# Python / environment
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+# Personal guidance and packaging, not for the repo
+RECORDING_SCRIPT_for_me.md
+RECORDING_SCRIPT.md
+*.zip
+*.mp4
+*.mov
+*.mkv
