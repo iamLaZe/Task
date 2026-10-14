@@ -16,3 +16,4 @@ RECORDING_SCRIPT.md
 *.mp4
 *.mov
 *.mkv
+.conda/
